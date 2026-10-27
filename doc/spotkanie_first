@@ -1,0 +1,30 @@
+# Notatka ze spotkania zespołu projektowego (mini-SIEM)
+
+**Data:** 28.10.2026 (Środa)
+**Forma spotkania:** Hybrydowa / Messenger
+**Obecność (100%):**
+- Dawid Łaś (Kierownik zespołu)
+- Maja Horbacz (Architekt)
+- Michał Piotrowski (Programista)
+- Łukasz Orlikowski (Testy i pomiary)
+- Piotr Głowacki (Dokumentacja)
+
+## 1. Podjęte decyzje
+- Zatwierdzono docelową architekturę systemu mini-SIEM oraz podział na kontenery.
+- Wybrano ostateczne technologie:
+  - Język i API: **Python (FastAPI)** z automatyczną dokumentacją Swagger/OpenAPI.
+  - Load Balancer: **Nginx** (skalowanie usługi Collector do 3 instancji).
+  - Kolejka komunikatów (asynchroniczna): **Redis**.
+  - Baza danych: **MySQL**.
+  - Monitoring i wizualizacja: **Prometheus + Grafana**.
+- Ustalono, że ruch sieciowy oraz sygnatury ataków (np. SQL Injection, Brute-Force) będą generowane symulatorem w Pythonie.
+- Skonfigurowano Githuba i automatyczny konfiguracja środowiska 
+## 2. Zidentyfikowane problemy (Blokery)
+- Głównym blokerem na ten moment jest brak gotowej konfiguracji środowiska Docker (`docker-compose.yml`).
+- Poszczególne osoby w zespole czekają na wystawienie bazowych konfiguracji usług, aby móc spiąć swój kod i rozpocząć testy integracyjne.
+
+## 3. Przydzielone zadania na najbliższe dni
+- **Łukasz i Maja:** Pilne dokończenie i wypchnięcie na repozytorium działającego `docker-compose.yml` oraz konfiguracji Nginxa, Redisa i MySQL.
+- **Michał:** Podpięcie kodu usługi `Collector` pod skonfigurowane kontenery.
+- **Dawid:** Przygotowanie workera `Analyzer` odbierającego logi z kolejki Redis.
+- **Piotr:** Zapisanie notatki w repozytorium i uzupełnienie diagramu architektury.
