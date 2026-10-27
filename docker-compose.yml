@@ -1,0 +1,75 @@
+version: '3.8'
+
+services:
+  # 1. Load Balancer (Nginx) - rozdziela ruch na Collector
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "8080:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - collector
+
+  # 2. Usługa Zbierania Logów (FastAPI w Pythonie) - skalowana do 3 instancji
+  collector:
+    build: ./collector
+    environment:
+      - REDIS_HOST=redis
+      - DATABASE_URL=mysql+pymysql://siem:siempass@db:3306/siemdb
+    depends_on:
+      - redis
+      - db
+    deploy:
+      replicas: 3  # Wymagane skalowanie poziome za load balancerem
+
+  # 3. Kolejka Komunikatów (Redis - szybka i bezproblemowa w Pythonie)
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  # 4. Usługa Analizy i Korelacji (Worker w Pythonie)
+  analyzer:
+    build: ./analyzer
+    environment:
+      - REDIS_HOST=redis
+      - DATABASE_URL=mysql+pymysql://siem:siempass@db:3306/siemdb
+    depends_on:
+      - redis
+      - db
+
+  # 5. Baza Danych (MySQL)
+  db:
+    image: mysql:8.0
+    environment:
+      - MYSQL_ROOT_PASSWORD=rootpass
+      - MYSQL_DATABASE=siemdb
+      - MYSQL_USER=siem
+      - MYSQL_PASSWORD=siempass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  # 6. Monitoring: Prometheus (zbiera metryki)
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:ro
+
+  # 7. Monitoring: Grafana (wykresy i dashboardy)
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    depends_on:
+      - prometheus
+
+volumes:
+  mysql_data:

@@ -1,0 +1,30 @@
+name: Auto-Deploy to Test Environment
+
+on:
+  push:
+    branches:
+      - main  # Uruchamia się automatycznie po każdej zmianie w gałęzi main
+
+jobs:
+  deploy-to-server:
+    runs-on: self-hosted  # Używa Waszego skonfigurowanego serwera testowego!
+
+    steps:
+      - name: 1. Pobierz najnowszy kod z repozytorium
+        uses: actions/checkout@v4
+
+      - name: 2. Odśwież i przebuduj kontenery Dockera na środowisku
+        run: |
+          echo "Zatrzymuje stare kontenery..."
+          docker compose down
+          
+          echo "Pobieram najnowsze zmiany (na wszelki wypadek)..."
+          git pull origin main
+          
+          echo "Buduję i uruchamiam nowe kontenery w tle..."
+          docker compose up -d --build --remove-orphans
+          
+          echo "Czyszczę nieużywane obrazy systemowe..."
+          docker image prune -f
+          
+          echo "Wdrożenie zakończone pomyślnie!"
