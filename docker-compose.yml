@@ -1,4 +1,4 @@
-version: '3.8'
+
 
 services:
   # 1. Load Balancer (Nginx) - rozdziela ruch na Collector
@@ -21,9 +21,9 @@ services:
       - redis
       - db
     deploy:
-      replicas: 3  # Wymagane skalowanie poziome za load balancerem
+      replicas: 3
 
-  # 3. Kolejka Komunikatów (Redis - szybka i bezproblemowa w Pythonie)
+  # 3. Kolejka Komunikatów Redis cashe
   redis:
     image: redis:alpine
     ports:
@@ -39,7 +39,7 @@ services:
       - redis
       - db
 
-  # 5. Baza Danych (MySQL)
+  # 5. Baza Danych MySQL
   db:
     image: mysql:8.0
     environment:
@@ -70,6 +70,6 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=admin
     depends_on:
       - prometheus
-
+      -db
 volumes:
   mysql_data:

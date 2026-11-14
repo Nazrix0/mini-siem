@@ -13,18 +13,31 @@ jobs:
       - name: 1. Pobierz najnowszy kod z repozytorium
         uses: actions/checkout@v4
 
-      - name: 2. Odśwież i przebuduj kontenery Dockera na środowisku
+- name: 2. Odśwież i przebuduj kontenery Dockera na środowisku
         run: |
           echo "Zatrzymuje stare kontenery..."
           docker compose down
-          
+
           echo "Pobieram najnowsze zmiany (na wszelki wypadek)..."
           git pull origin main
-          
+
           echo "Buduję i uruchamiam nowe kontenery w tle..."
           docker compose up -d --build --remove-orphans
-          
+
           echo "Czyszczę nieużywane obrazy systemowe..."
           docker image prune -f
-          
-          echo "Wdrożenie zakończone pomyślnie!"
+
+          echo "Czekam 15 sekund na pełne uruchomienie bazy MySQL i usług..."
+          sleep 15
+
+      - name: 3. Uruchom testy automatyczne
+        run: |
+          echo "Przygotowuję środowisko testowe Python..."
+          python3 -m venv .venv
+          .venv/bin/pip install --upgrade pip
+          .venv/bin/pip install pytest requests pymysql cryptography redis
+
+          echo "Uruchamiam testy"
+          PYTHONPATH=. .venv/bin/pytest tests/test.py
+          PYTHONPATH=. .venv/bin/pytest tests/test_integration.py
+          echo "Wdrożenie i testy zakończone pomyślnie!"
