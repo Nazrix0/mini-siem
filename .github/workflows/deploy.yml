@@ -13,7 +13,7 @@ jobs:
       - name: 1. Pobierz najnowszy kod z repozytorium
         uses: actions/checkout@v4
 
-- name: 2. Odśwież i przebuduj kontenery Dockera na środowisku
+      - name: 2. Odśwież i przebuduj kontenery Dockera na środowisku
         run: |
           echo "Zatrzymuje stare kontenery..."
           docker compose down
