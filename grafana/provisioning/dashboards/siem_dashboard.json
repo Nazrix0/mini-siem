@@ -1,0 +1,94 @@
+{
+  "title": "Mini-SIEM Security & Performance Dashboard",
+  "uid": "mini-siem-main",
+  "timezone": "browser",
+  "refresh": "5s",
+  "schemaVersion": 38,
+  "panels": [
+    {
+      "id": 5,
+      "title": "Status Instancji Collector (Zielony = UP / Czerwony = AWARIA)",
+      "type": "stat",
+      "gridPos": { "h": 5, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus_ds" },
+      "fieldConfig": {
+        "defaults": {
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "AWARIA (DOWN)", "color": "red" }, "1": { "text": "ONLINE (UP)", "color": "green" } } }
+          ],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "green", "value": 1 }
+            ]
+          }
+        }
+      },
+      "options": { "colorMode": "background", "graphMode": "none", "textMode": "value_and_name" },
+      "targets": [
+        {
+          "expr": "up{job=\"collector\"}",
+          "legendFormat": "Instancja {{instance}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Ruch HTTP rozkładany na poszczególne instancje Collector (RPS)",
+      "type": "timeseries",
+      "gridPos": { "h": 5, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus_ds" },
+      "targets": [
+        {
+          "expr": "sum by (instance) (rate(http_requests_total[30s]))",
+          "legendFormat": "Collector {{instance}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "title": "Wykryte Alerty Bezpieczeństwa (Na żywo z MySQL)",
+      "type": "table",
+      "gridPos": { "h": 9, "w": 24, "x": 0, "y": 5 },
+      "datasource": { "type": "mysql", "uid": "mysql_ds" },
+      "targets": [
+        {
+          "rawSql": "SELECT id, timestamp AS 'Czas', source_ip AS 'Adres IP', alert_type AS 'Typ Ataku', description AS 'Szczegóły' FROM alerts ORDER BY id DESC LIMIT 50;",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "Liczba ataków według typu (MySQL)",
+      "type": "barchart",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
+      "datasource": { "type": "mysql", "uid": "mysql_ds" },
+      "targets": [
+        {
+          "rawSql": "SELECT alert_type AS metric, COUNT(*) AS value FROM alerts GROUP BY alert_type;",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Ostatnie Surowe Logi (MySQL)",
+      "type": "table",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
+      "datasource": { "type": "mysql", "uid": "mysql_ds" },
+      "targets": [
+        {
+          "rawSql": "SELECT id, timestamp, source_ip, service, event_type, payload FROM raw_logs ORDER BY id DESC LIMIT 25;",
+          "format": "table",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}

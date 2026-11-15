@@ -1,0 +1,22 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    uid: prometheus_ds
+    access: proxy
+    url: http://prometheus:9090
+    isDefault: true
+    editable: true
+
+  - name: MySQL-SIEM
+    type: mysql
+    uid: mysql_ds
+    url: db:3306
+    user: siem
+    database: siemdb
+    jsonData:
+      tlsSkipVerify: true
+    secureJsonData:
+      password: siempass
+    editable: true

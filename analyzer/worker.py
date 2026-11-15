@@ -89,10 +89,22 @@ def process_log(log_data: dict, conn):
             print(f"[ALERT] {alert[2]} from {alert[1]}")
 
 if __name__ == "__main__":
-    redis_client = redis.Redis(host=os.getenv("REDIS_HOST", "redis"), port=6379, db=0)
+    redis_client = redis.Redis(
+        host=os.getenv("REDIS_HOST", "redis"),
+        port=6379,
+        db=0,
+        socket_keepalive=True,
+        health_check_interval=30
+    )
     db_conn = get_db_connection()
-    print("Analyzer started...")
+    print("Analyzer started and listening for logs...")
     while True:
-        _, message = redis_client.blpop("logs_queue")
-        log_event = json.loads(message)
-        process_log(log_event, db_conn)
+        try:
+            item = redis_client.blpop("logs_queue", timeout=5)
+            if item:
+                _, message = item
+                log_event = json.loads(message)
+                process_log(log_event, db_conn)
+        except Exception as e:
+            print("Worker loop warning (reconnecting):", e)
+            time.sleep(1)
