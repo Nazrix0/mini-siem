@@ -76,7 +76,7 @@ Wymagania projektu: *każdy pomiar powtórzony min. 5 razy po kilku minutach roz
 5. Aby zakończyć pomiar, kliknij czerwony przycisk **Stop** w prawym górnym rogu (i **Reset Stats** przed kolejną próbą).
 
 
-## 5. Przydatne komendy w terminalu (Dla osób pracujących przez SSH)
+## 4. Przydatne komendy w terminalu (Dla osób pracujących przez SSH)
 
 Wszystkie komendy wykonujemy w katalogu projektu na serwerze:
 1. Ręczne zarządzewnie 
