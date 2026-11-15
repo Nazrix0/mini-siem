@@ -1,41 +1,18 @@
-# mini-siem
+```mermaid
+flowchart TD
+    Client["Klient / Generator"] -->|"1. REST HTTP POST - Synchronicznie"| Nginx["Nginx (Load Balancer)"]
+    
+    Nginx -->|Rozkład ruchu| C1["Collector (Inst. 1)"]
+    Nginx -->|Rozkład ruchu| C2["Collector (Inst. 2)"]
+    Nginx -->|Rozkład ruchu| C3["Collector (Inst. 3)"]
+    
+    C1 & C2 & C3 -->|"2. Asynchronicznie: Kolejka komunikatów"| Redis["Redis (Kolejka logów)"]
+    Redis -->|"3. Pobieranie zadań"| Analyzer["Analyzer (Usługa korelacji / worker w Pythonie)"]
+    Analyzer -->|"4. Zapis alertów i logów"| MySQL[("MySQL (Relacyjna baza danych)")]
 
-
-┌────────────────────────────────────────────────────────┐
- │                   Klient / Generator                   │
- └───────────────────────────┬────────────────────────────┘
-                             │ (1. REST HTTP POST - Synchronicznie)
-                             ▼
-                     ┌───────────────┐
-                     │     Nginx     │ (Load Balancer)
-                     └───────┬───────┘
-                             │
-            ┌────────────────┼────────────────┐
-            │ (Rozkład ruchu na 3 instancje)  │
-            ▼                ▼                ▼
-      ┌───────────┐    ┌───────────┐    ┌───────────┐
-      │ Collector │    │ Collector │    │ Collector │ (Usługa zbierania - 3 repliki w Pythonie)
-      │  (Inst. 1)│    │  (Inst. 2)│    │  (Inst. 3)│
-      └─────┬─────┘    └─────┬─────┘    └─────┬─────┘
-            │                │                │
-            └────────────────┼────────────────┘
-                             │ (2. Asynchronicznie: Kolejka komunikatów)
-                             ▼
-                     ┌───────────────┐
-                     │     Redis     │ (Kolejka logów)
-                     └───────┬───────┘
-                             │
-                             ▼ (3. Pobieranie zadań)
-                     ┌───────────────┐
-                     │   Analyzer    │ (Usługa korelacji / worker w Pythonie)
-                     └───────┬───────┘
-                             │
-                             ▼ (4. Zapis alertów i logów)
-                     ┌───────────────┐
-                     │     MySQL     │ (Relacyjna baza danych)
-                     └───────────────┘
-
-   [ Monitorowanie centralne ]
-   ┌────────────┐   zbiera metryki   ┌────────────┐   wizualizacja (wykresy/dashboardy)   ┌───────────┐
-   │ Prometheus ├───────────────────►│  Grafana   ├──────────────────────────────────────►│ Użytkownik│
-   └────────────┘                    └────────────┘                                       └───────────┘
+    subgraph Monitoring ["Monitorowanie centralne"]
+        direction LR
+        Prometheus["Prometheus"] -->|"zbiera metryki"| Grafana["Grafana"]
+        Grafana -->|"wizualizacja (wykresy/dashboardy)"| User["Użytkownik"]
+    end
+```
