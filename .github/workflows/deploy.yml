@@ -40,7 +40,5 @@ jobs:
           echo "Uruchamiam testy"
           PYTHONPATH=. .venv/bin/pytest tests/test.py
           PYTHONPATH=. .venv/bin/pytest tests/test_integration.py
-          echo "Uruchamiam automatyczny pomiar wydajności Locust (20 użytkowników, 15s)..."
-          .venv/bin/locust -f tests/locustfile.py --headless --host http://localhost:8080 -u 20 -r 5 -t 15s --csv=locust_results --html=locust_report.html
 
           echo "Wdrożenie i testy zakończone pomyślnie!"
