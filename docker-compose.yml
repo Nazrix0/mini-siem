@@ -11,20 +11,40 @@ services:
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
       - ./nginx/certs:/etc/nginx/certs:ro
     depends_on:
-      - collector
-
+      - collector-1
+      - collector-2
+      - collector-3
   # 2. Usługa Zbierania Logów (FastAPI w Pythonie) - skalowana do 3 instancji
-  collector:
+  collector-1:
     build: ./collector
+    container_name: collector-1
+    hostname: collector-1
     environment:
       - REDIS_HOST=redis
       - DATABASE_URL=mysql+pymysql://siem:siempass@db:3306/siemdb
     depends_on:
       - redis
       - db
-    deploy:
-      replicas: 3
-
+  collector-2:
+    build: ./collector
+    container_name: collector-2
+    hostname: collector-2
+    environment:
+      - REDIS_HOST=redis
+      - DATABASE_URL=mysql+pymysql://siem:siempass@db:3306/siemdb
+    depends_on:
+      - redis
+      - db
+  collector-3:
+    build: ./collector
+    container_name: collector-3
+    hostname: collector-3
+    environment:
+      - REDIS_HOST=redis
+      - DATABASE_URL=mysql+pymysql://siem:siempass@db:3306/siemdb
+    depends_on:
+      - redis
+      - db
   # 3. Kolejka Komunikatów Redis cashe
   redis:
     image: redis:alpine

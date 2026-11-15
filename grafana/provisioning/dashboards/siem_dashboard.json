@@ -7,30 +7,53 @@
   "panels": [
     {
       "id": 5,
-      "title": "Status Instancji Collector (Zielony = UP / Czerwony = AWARIA)",
+      "title": "Status Instancji Collector (Zielony = ONLINE / Czerwony = AWARIA)",
       "type": "stat",
       "gridPos": { "h": 5, "w": 12, "x": 0, "y": 0 },
       "datasource": { "type": "prometheus", "uid": "prometheus_ds" },
       "fieldConfig": {
         "defaults": {
           "mappings": [
-            { "type": "value", "options": { "0": { "text": "AWARIA (DOWN)", "color": "red" }, "1": { "text": "ONLINE (UP)", "color": "green" } } }
+            { "type": "value", "options": {
+              "0": { "text": "AWARIA (DOWN)", "color": "red" },
+              "1": { "text": "ONLINE (UP)", "color": "green" }
+            }},
+            { "type": "special", "options": { "match": "null", "result": { "text": "AWARIA (DOWN)", "color": "red" } } }
           ],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               { "color": "red", "value": null },
+              { "color": "red", "value": 0 },
               { "color": "green", "value": 1 }
             ]
           }
         }
       },
-      "options": { "colorMode": "background", "graphMode": "none", "textMode": "value_and_name" },
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "textMode": "value_and_name",
+        "reduceOptions": { "calcs": ["last"], "fields": "", "values": false }
+      },
       "targets": [
         {
-          "expr": "up{job=\"collector\"}",
-          "legendFormat": "Instancja {{instance}}",
+          "expr": "up{instance=\"collector-1:8000\"}",
+          "legendFormat": "Collector 1",
+          "instant": true,
           "refId": "A"
+        },
+        {
+          "expr": "up{instance=\"collector-2:8000\"}",
+          "legendFormat": "Collector 2",
+          "instant": true,
+          "refId": "B"
+        },
+        {
+          "expr": "up{instance=\"collector-3:8000\"}",
+          "legendFormat": "Collector 3",
+          "instant": true,
+          "refId": "C"
         }
       ]
     },
@@ -43,7 +66,7 @@
       "targets": [
         {
           "expr": "sum by (instance) (rate(http_requests_total[30s]))",
-          "legendFormat": "Collector {{instance}}",
+          "legendFormat": "{{instance}}",
           "refId": "A"
         }
       ]
