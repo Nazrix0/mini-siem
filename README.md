@@ -83,11 +83,11 @@ Wszystkie komendy wykonujemy w katalogu projektu na serwerze:
 ```bash
 cd /home/user/actions-runner/_work/mini-siem/mini-siem
 ```
- - Sprawdzenie statusu kontenerów ```bash docker compose ps ```
- - Włączenie/przebudowanie środowiska ```bash docker compose up -d --build ```
- - Wyłączenie środowiska ```bash docker compose down ```
- - Pełny reset (wraz z wyczyszczeniem bazy MySQL) ```bash docker compose down -v ```
- - Podgląd wykrywanych ataków na żywo  ```bash  docker compose logs -f analyzer ```
+ - Sprawdzenie statusu kontenerów``` docker compose ps```
+ - Włączenie/przebudowanie środowiska ``` docker compose up -d --build ```
+ - Wyłączenie środowiska ``` docker compose down ```
+ - Pełny reset (wraz z wyczyszczeniem bazy MySQL) ``` docker compose down -v ```
+ - Podgląd wykrywanych ataków na żywo  ```  docker compose logs -f analyzer ```
 2. Ręczne uruchomienie testów i generatora ruchu
 
 ```bash
@@ -105,11 +105,6 @@ PYTHONPATH=. .venv/bin/pytest tests/test_integration.py
 #Wyłączenie 
 docker stop mini-siem-collector-2
 #Włączenie 
-docker start mini-siem-collector-2```
- 4. Porówanie skalowaności(instancje)
-```bash
-#Przełączenie na 1 instancję Collectora
-docker compose up -d --scale collector=1
-#Przełączenie na 3 instancje Collectora
-docker compose up -d --scale collector=3
-``` 
+docker start mini-siem-collector-2
+```
+
