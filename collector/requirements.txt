@@ -6,3 +6,4 @@ prometheus-fastapi-instrumentator
 pymysql
 cryptography
 requests
+PyJWT

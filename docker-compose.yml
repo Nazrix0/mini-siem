@@ -22,9 +22,11 @@ services:
     environment:
       - REDIS_HOST=redis
       - DATABASE_URL=mysql+pymysql://siem:siempass@db:3306/siemdb
+      - JWT_SECRET=super-tajny-klucz-mini-siem-p2
     depends_on:
       - redis
       - db
+
   collector-2:
     build: ./collector
     container_name: collector-2
@@ -32,9 +34,11 @@ services:
     environment:
       - REDIS_HOST=redis
       - DATABASE_URL=mysql+pymysql://siem:siempass@db:3306/siemdb
+      - JWT_SECRET=super-tajny-klucz-mini-siem-p2
     depends_on:
       - redis
       - db
+
   collector-3:
     build: ./collector
     container_name: collector-3
@@ -42,6 +46,7 @@ services:
     environment:
       - REDIS_HOST=redis
       - DATABASE_URL=mysql+pymysql://siem:siempass@db:3306/siemdb
+      - JWT_SECRET=super-tajny-klucz-mini-siem-p2
     depends_on:
       - redis
       - db
@@ -57,6 +62,8 @@ services:
     environment:
       - REDIS_HOST=redis
       - DATABASE_URL=mysql+pymysql://siem:siempass@db:3306/siemdb
+    volumes:
+      - ./analyzer/firebase:/app/firebase:ro
     depends_on:
       - redis
       - db
