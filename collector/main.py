@@ -218,6 +218,11 @@ class DeviceTokenRequest(BaseModel):
 
 
 class MobileIncidentRequest(BaseModel):
+    source_ip: Optional[str] = Field(
+        default=None,
+        examples=["192.168.1.50"],
+        description="Opcjonalny adres IP / źródło incydentu",
+    )
     asset_id: str = Field(
         ..., examples=["SRV-LAB-04"], description="ID zasobu zeskanowane z kodu QR"
     )
@@ -475,12 +480,19 @@ def register_device(
 )
 def report_mobile_incident(
     incident: MobileIncidentRequest,
+    request: Request,
     user: dict = Depends(get_current_user),
 ):
     event_ts = incident.client_created_at or utc_now_iso()
+    detected_ip = (
+        (incident.source_ip or "").strip()
+        or request.headers.get("x-real-ip")
+        or (request.headers.get("x-forwarded-for", "").split(",")[0].strip() or None)
+        or (request.client.host if request.client else "unknown")
+    )
     queued_payload = {
         "timestamp": event_ts,
-        "source_ip": f"mobile:{user['username']}",
+        "source_ip": detected_ip,
         "service": "mobile-app",
         "event_type": "MOBILE_INCIDENT",
         "payload": f"[{incident.severity}] Asset={incident.asset_id}: {incident.description}",

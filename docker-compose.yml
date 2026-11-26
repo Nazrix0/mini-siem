@@ -63,7 +63,7 @@ services:
       - REDIS_HOST=redis
       - DATABASE_URL=mysql+pymysql://siem:siempass@db:3306/siemdb
     volumes:
-      - ./analyzer/firebase:/app/firebase:ro
+      - /home/user/siem-secrets:/app/firebase:ro
     depends_on:
       - redis
       - db
@@ -109,7 +109,7 @@ services:
       - "8089:8089"
     volumes:
       - ./tests:/mnt/locust
-    command: -f /mnt/locust/locustfile.py --host http://nginx:80
+    command: -f /mnt/locust/locustfile.py,/mnt/locust/locustfile_mobile.py --class-picker --host http://nginx:80
     depends_on:
       - nginx
 
