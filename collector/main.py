@@ -13,6 +13,7 @@ import jwt
 import pymysql
 import redis
 import requests
+from fastapi import Request
 from fastapi import Depends, FastAPI, HTTPException, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
