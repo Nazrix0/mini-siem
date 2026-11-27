@@ -71,3 +71,13 @@ def test_mobile_jwt_incident_and_lww_conflict_resolution():
     assert stale_body["conflict_resolved"] is True
     assert stale_body["winner"] == "server"
     assert stale_body["alert"]["status"] == "RESOLVED"
+
+
+def test_delta_sync_since_filter():
+    # Zapytanie z bardzo przyszłą datą powinno zwrócić pustą listę (0 bajtów zbędnych danych)
+    empty_res = requests.get(
+        f"{BASE_URL}/api/v1/alerts?limit=50&since=2099-01-01T00:00:00Z",
+        timeout=5,
+    )
+    assert empty_res.status_code == 200
+    assert empty_res.json() == []

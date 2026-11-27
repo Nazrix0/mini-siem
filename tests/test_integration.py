@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import time
 import requests
 
@@ -6,7 +7,7 @@ BASE_URL = "http://localhost:8080"
 def test_end_to_end_pipeline():
     test_ip = "10.88.77.66"
     attack_log = {
-        "timestamp": "2137-10-10T10:00:00Z",
+        "timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "source_ip": test_ip,
         "service": "auth-api",
         "event_type": "HTTP_REQUEST",

@@ -1,9 +1,10 @@
 fastapi
 uvicorn
 redis
-pydantic
-prometheus-fastapi-instrumentator
 pymysql
+DBUtils
 cryptography
-requests
+prometheus-fastapi-instrumentator
+pydantic
 PyJWT
+requests
