@@ -32,6 +32,8 @@ SIGNATURES = {
 
 failed_logins_counter = defaultdict(int)
 firebase_initialized = False
+LAST_PUSH_AT = 0.0
+PUSH_COOLDOWN_SEC = 5.0
 
 
 def utc_now_iso() -> str:
@@ -141,8 +143,13 @@ def connect_and_init_db():
 
 def send_push_notification(conn, alert_type: str, description: str, alert_id: int):
     """Wysyła powiadomienie Push przez Firebase Cloud Messaging (jeśli skonfigurowane)."""
+    global LAST_PUSH_AT
     if not firebase_initialized:
         return
+    now_mono = time.monotonic()
+    if now_mono - LAST_PUSH_AT < PUSH_COOLDOWN_SEC:
+        return
+    LAST_PUSH_AT = now_mono
     try:
         with conn.cursor() as cur:
             cur.execute("SELECT fcm_token FROM device_tokens")
